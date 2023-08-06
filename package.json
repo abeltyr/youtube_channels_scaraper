@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "r": "rm -rf ./channelsData.json && pnpm dev && pnpm sort",
+    "dev": "node app.js",
+    "sort": "node scripts/doublecheck.js && node scripts/subCheck.js && node scripts/subClassifier.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -4,6 +4,7 @@ const fs = require('fs');
 const subCheck = async () => {
 
     let channelsWithSubscribers = {}
+    let channelsWithNoSubscribers = {}
     for (let channel of channels) {
 
         if (channel["channelSub"].includes(" subscribers")) {
@@ -15,10 +16,14 @@ const subCheck = async () => {
                 "channelSub": channel["channelSub"],
                 "channelSubCount": subData[0],
             };
+        } else {
+            channelsWithNoSubscribers[channel["channelLink"]] = channel
         }
     }
     // If file doesn't exist, create a new file and write the JavaScript code to it
     fs.writeFileSync("./channel/channelsWithSubscribers.json", JSON.stringify(Object.values(channelsWithSubscribers)), 'utf8');
+    fs.writeFileSync("./channel/channelsWithNoSubscribers.json", JSON.stringify(Object.values(channelsWithNoSubscribers)), 'utf8');
+
     console.log('New file created with the JavaScript code.');
 
     // Close the browser

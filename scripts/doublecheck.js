@@ -8,7 +8,6 @@ const containsAmharic = (str) => {
 const getQuotes = async () => {
     let amharicChannels = {}
     for (let channel of channels) {
-        console.log(channel);
 
         // if (containsAmharic(channel["videoDescription"]) || containsAmharic(channel["channelName"]) || containsAmharic(channel["channelLink"])) {
         amharicChannels[channel["channelLink"]] = channel;

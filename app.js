@@ -18,9 +18,19 @@ const getQuotes = async () => {
     // - wait until the dom content is loaded (HTML is ready)
 
     let url =
-        // "https://www.youtube.com/results?search_query=amharic+entertainment&sp=EgIQAg%253D%253D"
-        // "https://www.youtube.com/results?search_query=Amharic+news&sp=EgIQAg%253D%253D"
-        "https://www.youtube.com/results?search_query=Amharic+music&sp=EgIQAg%253D%253D"
+        // "https://www.youtube.com/results?search_query=Popular+Ethiopian+YouTubers&sp=EgIQAg%253D%253D"
+        // "https://www.youtube.com/results?search_query=Ethiopian+content+creators+on+YouTube&sp=EgIQAg%253D%253D"
+        // "https://www.youtube.com/results?search_query=Ethiopia-based+YouTube+creator&sp=EgIQAg%253D%253D"
+        // "https://www.youtube.com/results?search_query=YouTube+channels+from+Ethiopia&sp=EgIQAg%253D%253D"
+        "https://www.youtube.com/results?search_query=Ethiopian+YouTube+creators&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Ethiopian+YouTube+channel&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=ethiopia+entertainment&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=ethiopia+news&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=ethiopia+music&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=ethiopia+movie&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=amharic+entertainment&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Amharic+news&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Amharic+music&sp=EgIQAg%253D%253D"
     // "https://www.youtube.com/results?search_query=amahric+movie&sp=EgIQAg%253D%253D"
 
     await page.goto(url, {
