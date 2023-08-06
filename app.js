@@ -18,11 +18,15 @@ const getQuotes = async () => {
     // - wait until the dom content is loaded (HTML is ready)
 
     let url =
-        // "https://www.youtube.com/results?search_query=Popular+Ethiopian+YouTubers&sp=EgIQAg%253D%253D"
-        // "https://www.youtube.com/results?search_query=Ethiopian+content+creators+on+YouTube&sp=EgIQAg%253D%253D"
-        // "https://www.youtube.com/results?search_query=Ethiopia-based+YouTube+creator&sp=EgIQAg%253D%253D"
-        // "https://www.youtube.com/results?search_query=YouTube+channels+from+Ethiopia&sp=EgIQAg%253D%253D"
-        "https://www.youtube.com/results?search_query=Ethiopian+YouTube+creators&sp=EgIQAg%253D%253D"
+        "https://www.youtube.com/results?search_query=Ethiopian+film+trailers&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Ethiopian+comedy+sketches&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Ethiopian+cultural+dances&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Amharic+language+tutorials&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Popular+Ethiopian+YouTubers&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Ethiopian+content+creators+on+YouTube&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Ethiopia-based+YouTube+creator&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=YouTube+channels+from+Ethiopia&sp=EgIQAg%253D%253D"
+    // "https://www.youtube.com/results?search_query=Ethiopian+YouTube+creators&sp=EgIQAg%253D%253D"
     // "https://www.youtube.com/results?search_query=Ethiopian+YouTube+channel&sp=EgIQAg%253D%253D"
     // "https://www.youtube.com/results?search_query=ethiopia+entertainment&sp=EgIQAg%253D%253D"
     // "https://www.youtube.com/results?search_query=ethiopia+news&sp=EgIQAg%253D%253D"
@@ -64,7 +68,7 @@ const getQuotes = async () => {
 
             console.log(`scroll ${count}`, before, after,);
 
-            if (count < 29) {
+            if (count < 5) {
                 scroll()
             } else {
                 const quotes = await page.evaluate(() => {
@@ -112,12 +116,6 @@ const getQuotes = async () => {
                     });
                 });
 
-                // Display the quotes
-                console.log("quotes", quotes);
-
-                // await page.evaluate(() => {
-                //     window.scrollTo(0, document.documentElement.childNodes[1].childNodes[3].scrollHeight);
-                // });
 
 
                 const path = "channelsData.json";
