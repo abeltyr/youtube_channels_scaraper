@@ -1,147 +1,185 @@
 const puppeteer = require("puppeteer")
-const oldData = require("./oldData/channelsData.json")
+const amharicChannels = require("./channel/amharicChannels.json")
+const countData = require("./channel/countData.json")
+
 const fs = require('fs');
-const getQuotes = async () => {
-    // Start a Puppeteer session with:
-    // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
-    // - no default viewport (`defaultViewport: null` - website page will in full width and height)
+
+const getQuotes = async() => {
+
     const browser = await puppeteer.launch({
         defaultViewport: null,
-        headless: false
-    });
-
-    // Open a new page
-    const page = await browser.newPage();
-    // await page.setViewport({ width: 400, height: 1062 });
-    // On this new page:
-    // - open the "http://quotes.toscrape.com/" website
-    // - wait until the dom content is loaded (HTML is ready)
-
-    let url =
-        "https://www.youtube.com/results?search_query=Ethiopian+film+trailers&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Ethiopian+comedy+sketches&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Ethiopian+cultural+dances&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Amharic+language+tutorials&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Popular+Ethiopian+YouTubers&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Ethiopian+content+creators+on+YouTube&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Ethiopia-based+YouTube+creator&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=YouTube+channels+from+Ethiopia&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Ethiopian+YouTube+creators&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Ethiopian+YouTube+channel&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=ethiopia+entertainment&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=ethiopia+news&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=ethiopia+music&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=ethiopia+movie&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=amharic+entertainment&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Amharic+news&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=Amharic+music&sp=EgIQAg%253D%253D"
-    // "https://www.youtube.com/results?search_query=amahric+movie&sp=EgIQAg%253D%253D"
-
-    await page.goto(url, {
-        waitUntil: "domcontentloaded",
-    });
-    // let previousHeight;
-
-    // previousHeight = await page.evaluate(document.documentElement.childNodes[1].childNodes[3].scrollHeight);
-    // await page.evaluate('window.scrollTo(0, document.documentElement.childNodes[1].childNodes[3].scrollHeight)');
-    // await page.waitForFunction(`document.documentElement.childNodes[1].childNodes[3].scrollHeight > ${previousHeight}`);
-
-    // // // await page.waitFor(1000);
-
-
-    await page.evaluate(() => {
-        window.scrollTo(0, document.documentElement.childNodes[1].childNodes[3].scrollHeight);
+        headless: false,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        ignoreDefaultArgs: ['--disable-extensions'],
     });
 
 
+    let detailedChannel = []
+    let count = countData ? countData.count : 0
 
-    let count = 0;
-
-    const scroll = () => {
-        setTimeout(async () => {
-            const { before, after } = await page.evaluate(() => {
-
-                const before = document.documentElement.childNodes[1].childNodes[3].scrollHeight
-                window.scrollTo(0, document.documentElement.childNodes[1].childNodes[3].scrollHeight);
-                return { before, after: document.documentElement.childNodes[1].childNodes[3].scrollHeight }
-            });
-
-            console.log(`scroll ${count}`, before, after,);
-
-            if (count < 5) {
-                scroll()
-            } else {
-                const quotes = await page.evaluate(() => {
-                    const quoteList = document.querySelectorAll("#content-section");
-
-                    // Fetch the sub-elements from the previously fetched quote element
-                    // Get the displayed text and return it (`.innerText`)
+    for (let amharicChannel of amharicChannels.slice(count, amharicChannels.length)) {
 
 
-                    // Convert the quoteList to an iterable array
-                    // For each quote fetch the text and author
-                    return Array.from(quoteList).map((quote) => {
-                        //     // Fetch the sub-elements from the previously fetched quote element
-                        //     // Get the displayed text and return it (`.innerText`)
-                        const channelTitleParent = quote.querySelector("#text")
+        const page = await browser.newPage();
 
-                        let channelTitle = "";
-                        if (channelTitleParent)
-                            channelTitle = channelTitleParent.innerText;
+        let url =
+            `https://www.youtube.com${amharicChannel["channelLink"]}/about`
+
+        // Open a new page
+        await page.goto(url, {
+            waitUntil: "domcontentloaded",
+        });
+
+        await delay(2000)
+        const {
+            channelBanner,
+            channelName,
+            channelUserName,
+            channelLogo,
+            channelVideos,
+            channelSubscription,
+            channelCreated,
+            channelViews,
+            channelDescription,
+            channelCreationLocation,
+            channelLink
+        } = await page.evaluate(() => {
 
 
-                        const channelDescriptionParent = quote.querySelector("#description")
+            const channel = document.querySelector("#page-manager > ytd-browse");
 
-                        let channelDescription = "";
-                        if (channelDescriptionParent)
-                            channelDescription = channelTitleParent.innerText;
+            if (channel) {
+                const channelSubscriptionParent = channel.querySelector("#subscriber-count")
+
+                let channelSubscription = "";
+                if (channelSubscriptionParent)
+                    channelSubscription = channelSubscriptionParent.innerText;
 
 
+                const channelUserNameParent = channel.querySelector("#channel-handle")
 
-
-                        const channelLinkParent = quote.querySelector("#main-link");
-                        let channelLink = "";
-                        if (channelLinkParent)
-                            channelLink = channelLinkParent.getAttribute("href");
-
-                        const channelSubParent = quote.querySelector("#video-count");
-
-                        let channelSub = "";
-                        if (channelSubParent)
-                            channelSub = channelSubParent.innerHTML;
+                let channelUserName = "";
+                if (channelUserNameParent)
+                    channelUserName = channelUserNameParent.innerText;
 
 
 
-                        return { channelTitle, channelDescription, channelLink, channelSub };
-                    });
-                });
+                const channelVideosParent = channel.querySelector("#meta > span:nth-child(6)")
+
+                let channelVideos = "";
+                if (channelVideosParent)
+                    channelVideos = channelVideosParent.innerText;
 
 
+                const channelNameParent = channel.querySelector("#text")
 
-                const path = "channelsData.json";
-                if (fs.existsSync(path)) {
-                    // If file exists, append the JavaScript code to it
-                    fs.appendFileSync(path, JSON.stringify([...oldData, ...quotes]), 'utf8');
-                    console.log('JavaScript code appended to existing file.');
-                } else {
-                    // If file doesn't exist, create a new file and write the JavaScript code to it
-                    fs.writeFileSync(path, JSON.stringify([...oldData, ...quotes]), 'utf8');
-                    console.log('New file created with the JavaScript code.');
+                let channelName = "";
+                if (channelNameParent)
+                    channelName = channelNameParent.innerText;
+
+
+                const channelLogoParent = channel.querySelector("img#img.style-scope.yt-img-shadow")
+
+                let channelLogo = "";
+                if (channelLogoParent) {
+                    channelLogo = channelLogoParent.src;
+                    console.log("channelLogo", channelLogo)
                 }
 
-                await browser.close();
+                const channelBannerParent = channel.querySelector("#contentContainer > div.banner-visible-area.style-scope.ytd-c4-tabbed-header-renderer")
 
+                let channelBanner = "";
+                if (channelBannerParent) {
+                    const style = window.getComputedStyle(channelBannerParent);
+                    const backgroundImage = style.getPropertyValue('--yt-channel-banner');
+                    channelBanner = backgroundImage.slice(4, backgroundImage.length - 2); // remove 'url("' at the start and '")' at the end
+                }
+
+
+                const channelCreatedParent = channel.querySelector("#right-column > yt-formatted-string:nth-child(2) > span:nth-child(2)")
+
+                let channelCreated = "";
+                if (channelCreatedParent)
+                    channelCreated = channelCreatedParent.innerText;
+
+
+                const channelViewsParent = channel.querySelector("#right-column > yt-formatted-string:nth-child(3)");
+
+                let channelViews = "";
+                if (channelViewsParent)
+                    channelViews = channelViewsParent.innerHTML;
+
+
+
+                const channelDescriptionParent = channel.querySelector("#description")
+
+                let channelDescription = "";
+                if (channelDescriptionParent)
+                    channelDescription = channelDescriptionParent.innerText;
+
+
+                const channelLinksParent = channel.querySelectorAll("#legacy-link-list-container > a");
+                let channelLink = [];
+                if (channelLinksParent) {
+                    for (let channelLinkParent of channelLinksParent) {
+                        channelLink = [...channelLink, {
+                            name: channelLinkParent.innerText,
+                            url: channelLinkParent.getAttribute("href")
+                        }]
+                    }
+                }
+
+                const channelCreationLocationParent = channel.querySelector("#details-container > table > tbody > tr:nth-child(2) > td:nth-child(2) > yt-formatted-string");
+
+                let channelCreationLocation = "";
+                if (channelCreationLocationParent)
+                    channelCreationLocation = channelCreationLocationParent.innerHTML;
+
+                return { channelBanner, channelName, channelLogo, channelVideos, channelSubscription, channelCreated, channelViews, channelDescription, channelCreationLocation, channelLink, channelUserName };
             }
-            count++;
-        }, 3000)
+
+            return {}
+        });
+
+        const data = {
+            channelBanner,
+            channelName,
+            channelLogo,
+            channelVideos,
+            channelSubscription,
+            channelDescription,
+            channelCreationLocation,
+            channelLink,
+            channelCreated,
+            channelViews,
+            channelLink: amharicChannel["channelLink"],
+            channelUserName,
+        }
+
+        fs.appendFileSync("./channel/detailedChannelProgress.json",
+            JSON.stringify(data) + ",", 'utf8');
+
+        console.log('channel', channelName, "is scraped");
+
+        detailedChannel = [...detailedChannel, data]
+
+
+
+        page.close();
+        count++;
+        fs.writeFileSync("./channel/countData.json",
+            JSON.stringify({ count }), 'utf8');
     }
 
+    fs.writeFileSync("./channel/detailedChannel.json", JSON.stringify(detailedChannel), 'utf8');
+    console.log('New file created with the JavaScript code.');
+    await browser.close()
+}
 
-    scroll();
-    // Close the browser
-
-    // await browser.close()
-};
 
 // Start the scraping
 getQuotes();
+
+const delay = (time) => {
+    return new Promise(resolve => setTimeout(resolve, time));
+}
