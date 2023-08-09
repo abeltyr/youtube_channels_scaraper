@@ -6,7 +6,7 @@ const country = async() => {
     let countries = {}
     for (let channel of channels) {
 
-        if (channel["creationLocation"]) {
+        if (channel["creationLocation"] && !channel["creationLocation"].includes("css")) {
 
             if (!countries[channel["creationLocation"]]) {
                 countries[channel["creationLocation"]] = [channel]
